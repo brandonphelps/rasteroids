@@ -1,0 +1,15 @@
+image: docker:latest
+
+
+build_job:
+  stage: build
+  script:
+    - ls
+    - echo "starting job..."
+    - echo $PATH
+    - cargo build
+    - echo job finished
+  only:
+    - feature/ci
+    - feature/socketcan
+    - main
