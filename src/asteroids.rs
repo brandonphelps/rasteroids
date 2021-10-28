@@ -1,7 +1,3 @@
-#![allow(unused_variables)]
-#![allow(unused_mut)]
-#![allow(dead_code)]
-
 // is there a way to only do this once? 
 #[cfg(feature = "gui")]
 use sdl2;
@@ -15,7 +11,6 @@ use sdl2::render::Canvas;
 use sdl2::video::Window;
 
 use crate::collision;
-use rand::Rng;
 
 #[derive(Debug, Clone)]
 pub struct MoveAblePos {

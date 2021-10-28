@@ -1,9 +1,9 @@
 #![allow(dead_code)]
 
 mod circles;
+mod asteroids;
 mod collision;
 mod console;
-mod entity_manager;
 mod game_state;
 mod utils;
 mod widget;
@@ -22,56 +22,6 @@ use crate::console::Console;
 use sdl2::keyboard::Keycode;
 //use sdl2::render::{Canvas, Texture, TextureCreator};
 //use sdl2::video::{Window, WindowContext};
-
-use entity_manager::Entity;
-use game_state::{Command, Position};
-use utils::Path;
-
-// todo: create gui implementation if a user wanted to play the game themselves.
-
-fn strip_empties(x: &mut HashMap<Entity, Entity>, value: &Entity) {
-    let tmp = x.clone();
-    let empties = tmp.iter().filter(|&(_, &v)| v.0 == value.0).map(|(k, _)| k);
-
-    for k in empties {
-        x.remove(k);
-    }
-}
-
-#[allow(dead_code)]
-fn generate_pathing_program(path: &Path) -> Vec<Command> {
-    let mut program = Vec::<Command>::new();
-
-    let _pos_offset_dist: f32 = 1.0;
-    let _speed = 0.5; // meters per second
-    let _tile_width = 16;
-
-    for p in path.path_points.iter() {
-        let current_pos = Position::new(p.0, p.1);
-        program.push(Command::MoveP(current_pos));
-    }
-
-    return program;
-}
-
-fn program_harvest_unit(
-    _entity: &Entity,
-    target_entity: &Entity,
-    target_pos: &Position,
-) -> Vec<Command> {
-    // should be like get programable units.
-    let mut prog = Vec::new();
-    prog.push(Command::MoveD(Position::new(
-        target_pos.get_x(),
-        target_pos.get_y(),
-    )));
-    prog.push(Command::Harvest(target_entity.clone()));
-    prog.push(Command::MoveD(Position::new(0, 0)));
-
-    // entity 1 is hive.
-    prog.push(Command::Deposit(Entity(1)));
-    return prog;
-}
 
 fn main() -> () {
 
@@ -105,12 +55,8 @@ fn main() -> () {
     // each programed unit gets a target
     // first entity is the actor, second is the "target"
     // let mut programed_units = Vec::<(Entity, Entity)>::new();
-    let _programmed_units = HashMap::<Entity, Entity>::new();
-
     let _frame = 0;
     let _max_frame = 20000;
-
-    let _current_target_entity: Option<Entity> = None;
 
     // 'running: while frame < max_frame {
     //     for event in event_pump.poll_iter() {
@@ -226,13 +172,8 @@ fn main() -> () {
     let mut p = PathBuf::from(env!("CARGO_MANIFEST_DIR"));
     p.push("lazy.ttf");
 
-    fn hello(s: String) {
-        println!("hello: {}", s);
-    }
 
-    let mut widget_stack = Vec::<Box<dyn widget::DrawableWidget>>::new();
-    let temp: Box<dyn widget::DrawableWidget> = Box::new(Console::new(p, &ttf_context, &hello));
-    widget_stack.push(temp);
+    let game_state = asteroids::game_init();
 
     // hold the app and wait for user to quit.
     'holding_loop: loop {
@@ -243,24 +184,8 @@ fn main() -> () {
 
         canvas.fill_rect(background_rec).unwrap();
 
-        // Draw for current top layer widget.
-        match widget_stack.get_mut(0) {
-            Some(ref mut widget) => {
-                widget.draw(&mut canvas, 0, 0);
-                canvas.present();
-            }
-            None => (),
-        }
-
         // event processing which is sent directly to the top layer widget.
         for event in event_pump.poll_iter() {
-            match widget_stack.get_mut(0) {
-                Some(ref mut widget) => {
-                    widget.update_event(event.clone());
-                }
-                None => (),
-            }
-
             match event {
                 Event::Quit { .. }
                 | Event::KeyDown {
