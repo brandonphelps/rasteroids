@@ -1,7 +1,7 @@
 [package]
-name = "rminions"
+name = "rasteroids"
 version = "0.1.0"
-authors = ["brandon phelps <bwp44f@mst.edu>"]
+authors = ["brandon phelps"]
 edition = "2018"
 
 [features]
@@ -11,14 +11,8 @@ default = []
 rand="0.7.3"
 
 [dependencies.sdl2]
-version="0.34"
+version="0.35"
 default-features = false
-# features = "bundled", how to mark this as unix / linux only? 
-features = ["ttf", "image"]
+features = ["ttf", "image", "bundled"]
 optional = false
-
-
-[dependencies.socketcan]
-socketcan="*"
-optional = true
 
