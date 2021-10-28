@@ -4,14 +4,11 @@ version = "0.1.0"
 authors = ["brandon phelps <bwp44f@mst.edu>"]
 edition = "2018"
 
-
 [features]
 default = []
-CAN = ["socketcan"]
 
 [dependencies]
 rand="0.7.3"
-rlua="0.16.2"
 
 [dependencies.sdl2]
 version="0.34"

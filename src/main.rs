@@ -8,12 +8,9 @@ mod game_state;
 mod utils;
 mod widget;
 
-use rlua::Lua;
 use sdl2::pixels::Color;
 use sdl2::rect::Rect;
 use std::collections::HashMap;
-use std::io;
-use std::io::BufRead;
 use std::path::PathBuf;
 
 use sdl2;
@@ -76,105 +73,7 @@ fn program_harvest_unit(
     return prog;
 }
 
-fn lua_entry() -> rlua::Result<()> {
-    let lua = Lua::new();
-    lua.context(|lua_ctx| {
-        let globals = lua_ctx.globals();
-        globals.set("string_var", "hello")?;
-        globals.set("int_var", 42)?;
-        Ok(())
-    })?;
-
-    lua.context(|lua_ctx| {
-        let globals = lua_ctx.globals();
-        println!("{}:", globals.get::<_, String>("string_var")?);
-        println!("{}", globals.get::<_, u8>("int_var")?);
-
-        assert_eq!(globals.get::<_, String>("string_var")?, "hello");
-        Ok(())
-    })?;
-
-    lua.context(|lua_ctx| {
-        let globals = lua_ctx.globals();
-
-        let p = lua_ctx
-            .load(
-                r#"
-                     global = 'foo'..'bar'
-                    "#,
-            )
-            .exec();
-        match p {
-            Ok(r) => Ok(r),
-            Err(r) => {
-                println!("{}", r);
-                Err(r)
-            }
-        }?;
-
-        println!("hello");
-
-        assert_eq!(globals.get::<_, String>("global")?, "foobar");
-
-        let table = lua_ctx.create_table()?;
-        table.set(1, "one")?;
-        table.set(2, "two")?;
-        table.set(3, "three")?;
-        assert_eq!(table.len()?, 3);
-
-        globals.set("array_table", table)?;
-
-        lua_ctx
-            .load(
-                r#"
-for k, v in pairs(array_table) do
-  print(k, v)
-end
-"#,
-            )
-            .exec()?;
-
-        let print: rlua::Function = globals.get("print")?;
-        print.call::<_, ()>("hello from rust")?;
-
-        let check_equal = lua_ctx
-            .create_function(|_, (list1, list2): (Vec<String>, Vec<String>)| Ok(list1 == list2))?;
-
-        globals.set("check_equal", check_equal)?;
-
-        assert_eq!(
-            lua_ctx
-                .load(r#"check_equal({"a", "b", "c"}, {"d", "e", "f"})"#)
-                .eval::<bool>()?,
-            false
-        );
-
-        print.call::<_, ()>("hello from rust")?;
-
-        Ok(())
-    })?;
-
-    lua.context(|lua_ctx| {
-        let stdin = io::stdin();
-        for line in stdin.lock().lines() {
-            let p = lua_ctx.load(&line.unwrap()).exec();
-
-            match p {
-                Ok(_r) => (),
-                Err(r) => {
-                    println!("{}", r)
-                }
-            }
-        }
-        Ok(())
-    })?;
-
-    Ok(())
-}
-
 fn main() -> () {
-    // lua_entry();
-    // return;
 
     let sdl_context = sdl2::init().unwrap();
     let mut event_pump = sdl_context.event_pump().unwrap();
