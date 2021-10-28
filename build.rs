@@ -1,6 +1,12 @@
 use std::env;
 use std::path::PathBuf;
 
+#[cfg(not(features="gui"))]
+fn main() {
+
+}
+
+#[cfg(features="gui")]
 fn main() {
     let target = env::var("TARGET").unwrap();
     
@@ -42,3 +48,5 @@ fn main() {
         }
     }
 }
+
+
