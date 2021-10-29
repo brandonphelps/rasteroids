@@ -12,6 +12,8 @@ use sdl2::video::Window;
 
 use crate::collision;
 
+use rand::Rng;
+
 #[derive(Debug, Clone)]
 pub struct MoveAblePos {
     pub pos_x: f64,
@@ -169,7 +171,9 @@ fn shoot_bullet(game_state: &mut GameState) -> () {
 }
 
 // update game logic 
-fn game_state_update(game_state: &GameState, dt: f64, game_input: &GameInput) -> GameState {
+fn game_state_update(game_state: GameState, dt: f64,
+                     game_input: &GameInput) -> GameState {
+
     let mut new_state = game_state.clone();
     
     new_state.shoot_bullet_cd = game_state.shoot_bullet_cd - 1;
@@ -201,7 +205,7 @@ fn game_state_update(game_state: &GameState, dt: f64, game_input: &GameInput) ->
         new_state.player.rust_sux.direction += 2.0 * std::f64::consts::PI;
     }
 
-    let mut player = &mut new_state.player;
+    let player = &mut new_state.player;
 
     update_pos(
         &mut player.rust_sux,
@@ -346,7 +350,7 @@ fn game_sdl2_render(game_state: &GameState, canvas: &mut Canvas<Window>) -> () {
 } 
 
 #[cfg(not(feature = "gui"))]
-pub fn game_update(game_state: &GameState,
+pub fn game_update(game_state: GameState,
 		   dt: f64,
 		   game_input: &GameInput) -> GameState {
 
@@ -356,7 +360,7 @@ pub fn game_update(game_state: &GameState,
 
 #[cfg(feature = "gui")]
 pub fn game_update(
-    game_state: &GameState,
+    game_state: GameState,
     dt: f64,
     game_input: &GameInput,
     canvas: &mut Canvas<Window>,

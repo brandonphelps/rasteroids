@@ -5,9 +5,11 @@ authors = ["brandon phelps"]
 edition = "2018"
 
 [features]
-default = []
+default = ["gui"]
+gui = []
 
 [dependencies]
+rand="0.7.3"
 
 [dependencies.sdl2]
 version="0.35"
