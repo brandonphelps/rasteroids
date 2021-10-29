@@ -67,7 +67,9 @@ fn main() -> () {
     'holding_loop: loop {
         canvas.clear();
 
-        game_state = asteroids::game_update(game_state, 1.0, &game_input, &mut canvas);
+        game_state = asteroids::game_update(game_state, 1.0, &game_input);
+
+        asteroids::game_sdl2_render(&game_state, &mut canvas);
 
         // asteroids::game_sdl2_render(&game_state, &mut canvas);
         canvas.present();

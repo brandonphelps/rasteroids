@@ -308,7 +308,7 @@ fn game_state_update(game_state: GameState, dt: f64,
 }
 
 #[cfg(feature = "gui")] 
-fn game_sdl2_render(game_state: &GameState, canvas: &mut Canvas<Window>) -> () {
+pub fn game_sdl2_render(game_state: &GameState, canvas: &mut Canvas<Window>) -> () {
     canvas.set_draw_color(Color::RGB(0, 255, 0));
     // put this into a asteroids specific draw function.
 
@@ -349,7 +349,6 @@ fn game_sdl2_render(game_state: &GameState, canvas: &mut Canvas<Window>) -> () {
     ));
 } 
 
-#[cfg(not(feature = "gui"))]
 pub fn game_update(game_state: GameState,
 		   dt: f64,
 		   game_input: &GameInput) -> GameState {
@@ -357,19 +356,6 @@ pub fn game_update(game_state: GameState,
     game_state_update(game_state, dt, &game_input)
 }
 
-
-#[cfg(feature = "gui")]
-pub fn game_update(
-    game_state: GameState,
-    dt: f64,
-    game_input: &GameInput,
-    canvas: &mut Canvas<Window>,
-) -> GameState {
-
-    let new_state = game_state_update(game_state, dt, game_input);
-    game_sdl2_render(&new_state, canvas);
-    return new_state;
-}
 
 #[cfg(all(test, not(feature = "gui")))]
 mod tests {
