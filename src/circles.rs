@@ -90,10 +90,14 @@ fn generate_circle_points(radius: i32) -> Vec<(i32, i32)> {
 
 #[cfg(test)]
 mod tests {
+    use crate::circles::create_circle_texture;
+
     use super::*;
     use sdl2;
     use sdl2::event::Event;
     use sdl2::keyboard::Keycode;
+    use sdl2::pixels::Color;
+    use sdl2::render::TextureCreator;
 
     #[test]
     fn circle_testing() {
@@ -114,13 +118,13 @@ mod tests {
             .unwrap();
         canvas.clear();
 
-        let radius = 100;
-        let texture_creator: TextureCreator<_> = canvas.texture_creator();
-        let circle_texture = create_circle_texture(&mut canvas, &texture_creator, radius).unwrap();
+        // let radius = 100;
+        // let texture_creator: TextureCreator<_> = canvas.texture_creator();
+        // let circle_texture = create_circle_texture(&mut canvas, &texture_creator, radius).unwrap();
 
-        canvas.set_draw_color(Color::RGB(0, 255, 0));
-        canvas.copy(&circle_texture, None, None).unwrap();
-        canvas.present();
+        // canvas.set_draw_color(Color::RGB(0, 255, 0));
+        // // canvas.copy(&circle_texture, None, None).unwrap();
+        // canvas.present();
 
         // hold the app and wait for user to quit.
         'holding_loop: loop {
@@ -136,7 +140,7 @@ mod tests {
                     }
                 }
             }
+            std::thread::sleep(std::time::Duration::from_secs(1));
         }
-        assert_eq!(1, 2);
     }
 }
