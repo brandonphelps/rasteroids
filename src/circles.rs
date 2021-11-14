@@ -3,6 +3,7 @@
 use sdl2::pixels::{Color, PixelFormatEnum};
 use sdl2::rect::Point;
 use sdl2::render::{Canvas, Texture, TextureCreator};
+use sdl2::surface::Surface;
 use sdl2::video::{Window, WindowContext};
 
 fn circle_formula(x: u32, y: u32) -> u32 {
@@ -15,6 +16,18 @@ fn next_x_sq(x_sq_n: u32, y_n: u32) -> u32 {
 
 fn radius_error(x_n: i32, y_n: i32, r_n: i32) -> i32 {
     (x_n * x_n + y_n * y_n - r_n * r_n).abs()
+}
+
+pub fn create_circle_surface(
+    canvas: &mut Canvas<Window>,
+    radius: i32,
+) -> Result<Surface, &'static str> {
+    let surface = Surface::new(512, 512, PixelFormatEnum::RGB24).unwrap();
+
+    let shifted_points = generate_circle_points(radius);
+
+
+    Ok(surface)
 }
 
 pub fn create_circle_texture<'a>(
