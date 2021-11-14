@@ -12,6 +12,8 @@ use sdl2::video::Window;
 
 use crate::collision;
 
+use crate::circles;
+
 use rand::Rng;
 
 #[derive(Debug, Clone)]
@@ -312,18 +314,24 @@ pub fn game_sdl2_render(game_state: &GameState, canvas: &mut Canvas<Window>) -> 
     canvas.set_draw_color(Color::RGB(0, 255, 0));
     // put this into a asteroids specific draw function.
 
+    let texture_creator = canvas.texture_creator();
+
+    // let this be the same size as the window. 
+    let mut main_texture = texture_creator.create_texture_target(None, 800, 600).unwrap();
+
+
     for ast in game_state.asteroids.iter() {
+        let asteroid_circle = circles::create_circle_texture(canvas, &texture_creator, ast.radius as i32).unwrap();
         canvas.set_draw_color(Color::RGB(255, 0, 0));
-        let p = canvas.fill_rect(Rect::new(
+        let dest_reg = Rect::new(
             ast.rust_sux.pos_x as i32,
             ast.rust_sux.pos_y as i32,
             ast.radius as u32,
             ast.radius as u32,
-        ));
-        match p {
-            Ok(_) => {}
-            Err(_) => {}
-        }
+        );
+
+        canvas.copy(&asteroid_circle, None, dest_reg).unwrap();
+        // let p = canvas.fill_rect();
     }
 
     for bull in game_state.bullets.iter() {

@@ -1,6 +1,6 @@
 #![allow(dead_code)]
 
-use sdl2::pixels::Color;
+use sdl2::pixels::{Color, PixelFormatEnum};
 use sdl2::rect::Point;
 use sdl2::render::{Canvas, Texture, TextureCreator};
 use sdl2::video::{Window, WindowContext};
@@ -25,8 +25,10 @@ pub fn create_circle_texture<'a>(
     let shifted_points = generate_circle_points(radius);
     // +1 because the center is there.
     let mut circle_texture = texture_creator
-        .create_texture_target(None, ((radius * 2) + 1) as u32, ((radius * 2) + 1) as u32)
+        .create_texture_target(Some(PixelFormatEnum::RGBA8888), ((radius * 2) + 1) as u32, ((radius * 2) + 1) as u32)
         .unwrap();
+    
+
     let text = canvas.with_texture_canvas(&mut circle_texture, |canvas_context| {
         canvas_context.set_draw_color(Color::RGB(255, 0, 0));
         for point in shifted_points.iter() {
@@ -90,8 +92,6 @@ fn generate_circle_points(radius: i32) -> Vec<(i32, i32)> {
 
 #[cfg(test)]
 mod tests {
-    use crate::circles::create_circle_texture;
-
     use super::*;
     use sdl2;
     use sdl2::event::Event;
@@ -118,13 +118,13 @@ mod tests {
             .unwrap();
         canvas.clear();
 
-        // let radius = 100;
-        // let texture_creator: TextureCreator<_> = canvas.texture_creator();
-        // let circle_texture = create_circle_texture(&mut canvas, &texture_creator, radius).unwrap();
+        let radius = 100;
+        let texture_creator: TextureCreator<_> = canvas.texture_creator();
+        let circle_texture = create_circle_texture(&mut canvas, &texture_creator, radius).unwrap();
 
-        // canvas.set_draw_color(Color::RGB(0, 255, 0));
-        // // canvas.copy(&circle_texture, None, None).unwrap();
-        // canvas.present();
+        canvas.set_draw_color(Color::RGB(0, 255, 0));
+        canvas.copy(&circle_texture, None, None).unwrap();
+        canvas.present();
 
         // hold the app and wait for user to quit.
         'holding_loop: loop {
@@ -140,7 +140,7 @@ mod tests {
                     }
                 }
             }
-            std::thread::sleep(std::time::Duration::from_secs(1));
+            std::thread::sleep(std::time::Duration::from_millis(16));
         }
     }
 }
