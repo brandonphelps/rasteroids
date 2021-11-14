@@ -1,7 +1,3 @@
-#![allow(unused_variables)]
-#![allow(unused_mut)]
-#![allow(dead_code)]
-
 // is there a way to only do this once? 
 #[cfg(feature = "gui")]
 use sdl2;
@@ -15,6 +11,7 @@ use sdl2::render::Canvas;
 use sdl2::video::Window;
 
 use crate::collision;
+
 use rand::Rng;
 
 #[derive(Debug, Clone)]
@@ -174,7 +171,9 @@ fn shoot_bullet(game_state: &mut GameState) -> () {
 }
 
 // update game logic 
-fn game_state_update(game_state: &GameState, dt: f64, game_input: &GameInput) -> GameState {
+fn game_state_update(game_state: GameState, dt: f64,
+                     game_input: &GameInput) -> GameState {
+
     let mut new_state = game_state.clone();
     
     new_state.shoot_bullet_cd = game_state.shoot_bullet_cd - 1;
@@ -206,7 +205,7 @@ fn game_state_update(game_state: &GameState, dt: f64, game_input: &GameInput) ->
         new_state.player.rust_sux.direction += 2.0 * std::f64::consts::PI;
     }
 
-    let mut player = &mut new_state.player;
+    let player = &mut new_state.player;
 
     update_pos(
         &mut player.rust_sux,
@@ -309,7 +308,7 @@ fn game_state_update(game_state: &GameState, dt: f64, game_input: &GameInput) ->
 }
 
 #[cfg(feature = "gui")] 
-fn game_sdl2_render(game_state: &GameState, canvas: &mut Canvas<Window>) -> () {
+pub fn game_sdl2_render(game_state: &GameState, canvas: &mut Canvas<Window>) -> () {
     canvas.set_draw_color(Color::RGB(0, 255, 0));
     // put this into a asteroids specific draw function.
 
@@ -350,27 +349,13 @@ fn game_sdl2_render(game_state: &GameState, canvas: &mut Canvas<Window>) -> () {
     ));
 } 
 
-#[cfg(not(feature = "gui"))]
-pub fn game_update(game_state: &GameState,
+pub fn game_update(game_state: GameState,
 		   dt: f64,
 		   game_input: &GameInput) -> GameState {
 
     game_state_update(game_state, dt, &game_input)
 }
 
-
-#[cfg(feature = "gui")]
-pub fn game_update(
-    game_state: &GameState,
-    dt: f64,
-    game_input: &GameInput,
-    canvas: &mut Canvas<Window>,
-) -> GameState {
-
-    let new_state = game_state_update(game_state, dt, game_input);
-    game_sdl2_render(&new_state, canvas);
-    return new_state;
-}
 
 #[cfg(all(test, not(feature = "gui")))]
 mod tests {
