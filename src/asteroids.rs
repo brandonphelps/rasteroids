@@ -12,6 +12,7 @@ use sdl2::render::{Canvas, TextureCreator};
 use sdl2::surface::Surface;
 #[cfg(feature = "gui")]
 use sdl2::video::Window;
+use sdl2::image::LoadTexture;
 
 use crate::collision;
 
@@ -29,6 +30,8 @@ pub struct ImageResources<'a> {
     // asteroids: [sdl2::surface::Surface<'a>; 2],
 
     asteroids_texture: sdl2::render::Texture<'a>,
+    bullet_texture: sdl2::render::Texture<'a>,
+    player_texture: sdl2::render::Texture<'a>,
 }
 
 impl<'a> ImageResources<'a> {
@@ -37,17 +40,18 @@ impl<'a> ImageResources<'a> {
     // kinda wonk imo.
     pub fn from_dir<T>(path: &Path, texture_creator: &'a TextureCreator<T>) -> Self {
         let big_asteroid_p = path.join("images").join("asteroid_big.bmp");
-
-        let big_asteroid: Surface = sdl2::image::LoadSurface::from_file(big_asteroid_p).unwrap();
-
-        let asteroid_text = texture_creator.create_texture_from_surface(big_asteroid).unwrap();
-
+        let bullet_p = path.join("images").join("bullet.bmp");
+        let player_p = path.join("images").join("player.bmp");
+        let asteroid_text = texture_creator.load_texture(big_asteroid_p).unwrap();
+        let bullet_texture = texture_creator.load_texture(bullet_p).unwrap();
+        let player_texture = texture_creator.load_texture(player_p).unwrap();
         Self {
             asteroids_texture: asteroid_text,
+            bullet_texture,
+            player_texture,
         }
     }
 }
-
 
 #[derive(Debug, Clone)]
 pub struct MoveAblePos {
@@ -344,47 +348,49 @@ fn game_state_update(game_state: GameState, dt: f64, game_input: &GameInput) -> 
 #[cfg(feature = "gui")]
 pub fn game_sdl2_render(game_state: &GameState, canvas: &mut Canvas<Window>,
                         image_resources: &ImageResources) -> () {
-    canvas.set_draw_color(Color::RGB(0, 255, 0));
+    canvas.set_draw_color(Color::RGB(0, 0, 0));
     // put this into a asteroids specific draw function.
 
     let texture_creator = canvas.texture_creator();
+    let mut new_texture = texture_creator.create_texture_target(texture_creator.default_pixel_format(), 150, 150).unwrap();
 
-    
-    
-    for ast in game_state.asteroids.iter() {
-        let dest_reg = Rect::new(
-            ast.rust_sux.pos_x as i32,
-            ast.rust_sux.pos_y as i32,
-            ast.radius as u32,
-            ast.radius as u32,
+    canvas.with_texture_canvas(&mut new_texture, |texture_canvas| {
+        texture_canvas.clear();
+        for ast in game_state.asteroids.iter() {
+            let dest_reg = Rect::new(
+                ast.rust_sux.pos_x as i32,
+                ast.rust_sux.pos_y as i32,
+                ast.radius as u32,
+                ast.radius as u32,
+            );
+
+            texture_canvas.copy(&image_resources.asteroids_texture,
+                                None, dest_reg).unwrap();
+        }
+        for bull in game_state.bullets.iter() {
+            let dest_reg = Rect::new(
+                bull.rust_sux.pos_x as i32,
+                bull.rust_sux.pos_y as i32,
+                bull.radius as u32,
+                bull.radius as u32,
+            );
+            texture_canvas.copy(&image_resources.bullet_texture, None, dest_reg).unwrap();
+        }
+
+        let player_rect = Rect::new(
+            game_state.player.rust_sux.pos_x as i32,
+            game_state.player.rust_sux.pos_y as i32,
+            game_state.player.radius as u32,
+            game_state.player.radius as u32,
         );
 
-        canvas.copy(&image_resources.asteroids_texture[BIG_ASTEROID_INDEX],
-                    None, dest_reg).unwrap();
-    }
+        texture_canvas.copy_ex(&image_resources.player_texture,
+                               None, player_rect, game_state.player.rust_sux.direction,
+                               None, false, false).unwrap();
+    }).unwrap();
+    canvas.copy(&new_texture, None, None).unwrap();
+}    
 
-    for bull in game_state.bullets.iter() {
-        canvas.set_draw_color(Color::RGB(125, 125, 0));
-        let p = canvas.fill_rect(Rect::new(
-            bull.rust_sux.pos_x as i32,
-            bull.rust_sux.pos_y as i32,
-            bull.radius as u32,
-            bull.radius as u32,
-        ));
-        match p {
-            Ok(_) => {}
-            Err(_) => {}
-        }
-    }
-
-    canvas.set_draw_color(Color::RGB(0, 255, 0));
-    let _p = canvas.fill_rect(Rect::new(
-        game_state.player.rust_sux.pos_x as i32,
-        game_state.player.rust_sux.pos_y as i32,
-        game_state.player.radius as u32,
-        game_state.player.radius as u32,
-    ));
-}
 
 pub fn game_update(game_state: GameState, dt: f64, game_input: &GameInput) -> GameState {
     game_state_update(game_state, dt, &game_input)
