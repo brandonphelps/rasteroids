@@ -313,12 +313,9 @@ pub fn game_sdl2_render(game_state: &GameState, canvas: &mut Canvas<Window>) -> 
     // put this into a asteroids specific draw function.
 
     let texture_creator = canvas.texture_creator();
-
-    // let this be the same size as the window. 
-    let mut main_texture = texture_creator.create_texture_target(None, 800, 600).unwrap();
-
-
+    
     for ast in game_state.asteroids.iter() {
+        // todo: load circles from bmp files instead. 
         let asteroid_circle = circles::create_circle_texture(canvas, &texture_creator, ast.radius as i32).unwrap();
         canvas.set_draw_color(Color::RGB(255, 0, 0));
         let dest_reg = Rect::new(

@@ -3,6 +3,7 @@ name = "rasteroids"
 version = "0.1.0"
 authors = ["brandon phelps"]
 edition = "2018"
+build = "build.rs"
 
 [features]
 default = ["gui"]
@@ -14,6 +15,6 @@ rand="0.7.3"
 [dependencies.sdl2]
 version="0.34"
 default-features = false
-features = ["ttf", "image"]
+features = ["ttf", "image", "bundled"]
 optional = false
 
