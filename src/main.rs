@@ -40,7 +40,6 @@ fn main() -> () {
     let resource_path = Path::new("resources");
     let image_resources = asteroids::ImageResources::from_dir(resource_path, &texture_creator);
 
-
     let frame_per_second_target = 60;
     let _milliseconds_per_frame = 1000.0 / frame_per_second_target as f32;
 
@@ -67,7 +66,7 @@ fn main() -> () {
     'holding_loop: loop {
         canvas.clear();
 
-        game_state = asteroids::game_update(game_state, 1.0, &game_input);
+        game_state = asteroids::game_update(game_state, 0.1, &game_input);
 
         asteroids::game_sdl2_render(&game_state, &mut canvas, &image_resources);
         canvas.present();

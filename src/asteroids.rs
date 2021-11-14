@@ -385,7 +385,7 @@ pub fn game_sdl2_render(game_state: &GameState, canvas: &mut Canvas<Window>,
         );
 
         texture_canvas.copy_ex(&image_resources.player_texture,
-                               None, player_rect, game_state.player.rust_sux.direction,
+                               None, player_rect, game_state.player.rust_sux.direction * 57.29578,
                                None, false, false).unwrap();
     }).unwrap();
     canvas.copy(&new_texture, None, None).unwrap();
