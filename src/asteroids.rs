@@ -1,4 +1,4 @@
-// is there a way to only do this once? 
+// is there a way to only do this once?
 #[cfg(feature = "gui")]
 use sdl2;
 #[cfg(feature = "gui")]
@@ -114,8 +114,8 @@ pub fn game_init() -> GameState {
         bullets: vec![],
         world_width: 100.0,
         world_height: 100.0,
-	shoot_bullet_cd: 0,
-	score: 0,
+        shoot_bullet_cd: 0,
+        score: 0,
     };
 
     let mut rng = rand::thread_rng();
@@ -170,21 +170,19 @@ fn shoot_bullet(game_state: &mut GameState) -> () {
     game_state.bullets.push(bullet);
 }
 
-// update game logic 
-fn game_state_update(game_state: GameState, dt: f64,
-                     game_input: &GameInput) -> GameState {
-
+// update game logic
+fn game_state_update(game_state: GameState, dt: f64, game_input: &GameInput) -> GameState {
     let mut new_state = game_state.clone();
-    
+
     new_state.shoot_bullet_cd = game_state.shoot_bullet_cd - 1;
 
     if new_state.shoot_bullet_cd < 0 {
-	new_state.shoot_bullet_cd = 0;
+        new_state.shoot_bullet_cd = 0;
     }
     if game_input.shoot && new_state.shoot_bullet_cd == 0 {
         shoot_bullet(&mut new_state);
-	// todo: what should the cd be? 
-	new_state.shoot_bullet_cd = 20;
+        // todo: what should the cd be?
+        new_state.shoot_bullet_cd = 20;
     }
 
     if game_input.thrusters {
@@ -214,7 +212,7 @@ fn game_state_update(game_state: GameState, dt: f64,
         game_state.world_height,
     );
 
-   for ast in new_state.asteroids.iter_mut() {
+    for ast in new_state.asteroids.iter_mut() {
         update_pos(
             &mut ast.rust_sux,
             dt,
@@ -275,8 +273,8 @@ fn game_state_update(game_state: GameState, dt: f64,
                     });
                 }
                 deleted_aster = true;
-		// 100 points per asteroid killed. 
-		new_state.score += 100;
+                // 100 points per asteroid killed.
+                new_state.score += 100;
                 bull.life_time = 0.0;
                 break;
             }
@@ -307,7 +305,7 @@ fn game_state_update(game_state: GameState, dt: f64,
     return new_state;
 }
 
-#[cfg(feature = "gui")] 
+#[cfg(feature = "gui")]
 pub fn game_sdl2_render(game_state: &GameState, canvas: &mut Canvas<Window>) -> () {
     canvas.set_draw_color(Color::RGB(0, 255, 0));
     // put this into a asteroids specific draw function.
@@ -347,15 +345,11 @@ pub fn game_sdl2_render(game_state: &GameState, canvas: &mut Canvas<Window>) -> 
         game_state.player.radius as u32,
         game_state.player.radius as u32,
     ));
-} 
-
-pub fn game_update(game_state: GameState,
-		   dt: f64,
-		   game_input: &GameInput) -> GameState {
-
-    game_state_update(game_state, dt, &game_input)
 }
 
+pub fn game_update(game_state: GameState, dt: f64, game_input: &GameInput) -> GameState {
+    game_state_update(game_state, dt, &game_input)
+}
 
 #[cfg(all(test, not(feature = "gui")))]
 mod tests {
@@ -405,29 +399,27 @@ mod tests {
     }
 
     fn test_game_shoot() {
-	let game_state  = game_init();
+        let game_state = game_init();
 
-	let game_input = GameInput {
-	    rotation: 0.0,
-	    shoot: false,
-	    thrusters: false,
-	};
+        let game_input = GameInput {
+            rotation: 0.0,
+            shoot: false,
+            thrusters: false,
+        };
 
-	let mut new_state = game_update(&game_state, 0.1, &game_input);
-	assert_eq!(new_state.bullets.len(), 0);
+        let mut new_state = game_update(&game_state, 0.1, &game_input);
+        assert_eq!(new_state.bullets.len(), 0);
 
-	// currently can't assert that bullet shoots cause it could collide with an asteroid
-	// todo: update game init to take number of asteroids then can test if bullets shoot or not. 
+        // currently can't assert that bullet shoots cause it could collide with an asteroid
+        // todo: update game init to take number of asteroids then can test if bullets shoot or not.
     }
 
     #[test]
     fn test_shoot_bullet() {
-	let mut game_state  = game_init();
+        let mut game_state = game_init();
 
-	shoot_bullet(&mut game_state);
+        shoot_bullet(&mut game_state);
 
-	assert_eq!(game_state.bullets.len(), 1);
-
+        assert_eq!(game_state.bullets.len(), 1);
     }
 }
-

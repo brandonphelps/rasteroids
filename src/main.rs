@@ -1,7 +1,7 @@
 #![allow(dead_code)]
 
-mod circles;
 mod asteroids;
+mod circles;
 mod collision;
 mod console;
 mod utils;
@@ -47,7 +47,6 @@ fn main() -> () {
     // let mut p = PathBuf::from(env!("CARGO_MANIFEST_DIR"));
     // p.push("lazy.ttf");
 
-
     let mut game_state = asteroids::game_init();
 
     let game_input = asteroids::GameInput {
@@ -63,8 +62,6 @@ fn main() -> () {
         game_state = asteroids::game_update(game_state, 1.0, &game_input);
 
         asteroids::game_sdl2_render(&game_state, &mut canvas);
-
-        // asteroids::game_sdl2_render(&game_state, &mut canvas);
         canvas.present();
 
         std::thread::sleep(std::time::Duration::from_millis(10));
@@ -134,5 +131,3 @@ fn main() -> () {
         }
     }
 }
-
-

@@ -31,17 +31,17 @@ pub struct Console<'ttf, 'a, 'callback> {
     // height of the console frame in pixels.
     console_height: u32,
 
-    // need some sort of callback hook for when event should occur. 
-    /// callback function if defined 
+    // need some sort of callback hook for when event should occur.
+    /// callback function if defined
     enter_callback: &'callback dyn Fn(String) -> (),
 }
 
 impl<'ttf, 'a, 'callback> Console<'ttf, 'a, 'callback> {
-    pub fn new(font_path: PathBuf,
-               ttf_c: &'ttf Sdl2TtfContext,
-               enter_callback: &'callback dyn Fn(String) -> ()) -> Self {
-
-
+    pub fn new(
+        font_path: PathBuf,
+        ttf_c: &'ttf Sdl2TtfContext,
+        enter_callback: &'callback dyn Fn(String) -> (),
+    ) -> Self {
         Self {
             current_string: String::new(),
             buffer: Vec::new(),
@@ -107,10 +107,8 @@ impl<'ttf, 'a, 'callback> Widget for Console<'ttf, 'a, 'callback> {
         };
 
         match handled_string {
-            Some(t) => {
-                (self.enter_callback)(t)
-            },
-            None => ()
+            Some(t) => (self.enter_callback)(t),
+            None => (),
         }
     }
 }
@@ -136,7 +134,9 @@ impl<'ttf, 'a, 'callback> DrawableWidget for Console<'ttf, 'a, 'callback> {
             .with_texture_canvas(&mut console_texture, |user_context| {
                 // draw the backbuffer.
                 user_context.set_draw_color(Color::RGBA(0, 200, 0, 255));
-                user_context.fill_rect(Rect::new(0, 0, self.console_width, self.console_height)).expect("Failed to fill rect");
+                user_context
+                    .fill_rect(Rect::new(0, 0, self.console_width, self.console_height))
+                    .expect("Failed to fill rect");
 
                 for (index, i) in self.buffer.iter().enumerate() {
                     let s = self
