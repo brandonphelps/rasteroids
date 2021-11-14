@@ -1,7 +1,7 @@
 #![allow(dead_code)]
 
-mod circles;
 mod asteroids;
+mod circles;
 mod collision;
 mod console;
 mod utils;
@@ -9,11 +9,7 @@ mod widget;
 
 use sdl2;
 use sdl2::event::Event;
-// use sdl2::EventPump;
-
 use sdl2::keyboard::Keycode;
-//use sdl2::render::{Canvas, Texture, TextureCreator};
-//use sdl2::video::{Window, WindowContext};
 
 fn main() -> () {
     let sdl_context = sdl2::init().unwrap();
@@ -24,7 +20,7 @@ fn main() -> () {
     let window_height = 600;
 
     let window = video_subsystem
-        .window("Window", window_width, window_height)
+        .window("RAsteroids", window_width, window_height)
         .position_centered()
         .build()
         .unwrap();
@@ -40,9 +36,6 @@ fn main() -> () {
     let frame_per_second_target = 60;
     let _milliseconds_per_frame = 1000.0 / frame_per_second_target as f32;
 
-    let _frame = 0;
-    let _max_frame = 20000;
-
     // need some sort of stateful item for what has focus.
     // need to then pass the event to w/e item has current focuse
     // then each item has a sort of "back out" option.
@@ -53,7 +46,6 @@ fn main() -> () {
     // let ttf_context = sdl2::ttf::init().map_err(|e| e.to_string()).unwrap();
     // let mut p = PathBuf::from(env!("CARGO_MANIFEST_DIR"));
     // p.push("lazy.ttf");
-
 
     let mut game_state = asteroids::game_init();
 
@@ -70,8 +62,6 @@ fn main() -> () {
         game_state = asteroids::game_update(game_state, 1.0, &game_input);
 
         asteroids::game_sdl2_render(&game_state, &mut canvas);
-
-        // asteroids::game_sdl2_render(&game_state, &mut canvas);
         canvas.present();
 
         std::thread::sleep(std::time::Duration::from_millis(10));
