@@ -7,6 +7,7 @@ mod console;
 mod utils;
 mod widget;
 
+use std::path::Path;
 use sdl2;
 use sdl2::event::Event;
 use sdl2::keyboard::Keycode;
@@ -32,6 +33,11 @@ fn main() -> () {
         .build()
         .unwrap();
     canvas.clear();
+
+
+    let resource_path = Path::new("resources");
+    let image_resources = asteroids::ImageResources::from_dir(resource_path);
+
 
     let frame_per_second_target = 60;
     let _milliseconds_per_frame = 1000.0 / frame_per_second_target as f32;

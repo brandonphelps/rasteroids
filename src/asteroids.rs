@@ -1,5 +1,6 @@
 // is there a way to only do this once?
 #[cfg(feature = "gui")]
+use std::path::Path;
 use sdl2;
 #[cfg(feature = "gui")]
 use sdl2::pixels::Color;
@@ -15,6 +16,32 @@ use crate::collision;
 use crate::circles;
 
 use rand::Rng;
+
+const BIG_ASTEROID_INDEX: u8 = 1;
+const SMALL_ASTEROID_INDEX: u8 = 1;
+
+/// contains a list of resources used for rendering. 
+pub struct ImageResources<'a> {
+    asteroids: [sdl2::surface::Surface<'a>; 2],
+}
+
+impl<'a> ImageResources<'a> {
+    // loads up images from the resource directory.
+
+    pub fn from_dir(path: &Path) -> Self {
+
+        let big_asteroid_p = path.join("images").join("asteroid_big.bmp");
+        let small_asteroid_p = path.join("images").join("asteroid_small.bmp");
+
+        let big_asteroid = sdl2::image::LoadSurface::from_file(big_asteroid_p).unwrap();
+        let small_asteroid = sdl2::image::LoadSurface::from_file(small_asteroid_p).unwrap();
+
+        Self {
+            asteroids: [small_asteroid, big_asteroid]
+        }
+    }
+}
+
 
 #[derive(Debug, Clone)]
 pub struct MoveAblePos {
@@ -43,6 +70,7 @@ impl Asteroid {
 
 #[derive(Clone, Debug)]
 pub struct Player {
+    // todo: rename this to 
     pub rust_sux: MoveAblePos,
     radius: f64,
 }
