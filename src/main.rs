@@ -35,8 +35,10 @@ fn main() -> () {
     canvas.clear();
 
 
+    let texture_creator = canvas.texture_creator();
+
     let resource_path = Path::new("resources");
-    let image_resources = asteroids::ImageResources::from_dir(resource_path);
+    let image_resources = asteroids::ImageResources::from_dir(resource_path, &texture_creator);
 
 
     let frame_per_second_target = 60;
@@ -67,7 +69,7 @@ fn main() -> () {
 
         game_state = asteroids::game_update(game_state, 1.0, &game_input);
 
-        asteroids::game_sdl2_render(&game_state, &mut canvas);
+        asteroids::game_sdl2_render(&game_state, &mut canvas, &image_resources);
         canvas.present();
 
         std::thread::sleep(std::time::Duration::from_millis(10));

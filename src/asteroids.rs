@@ -7,7 +7,9 @@ use sdl2::pixels::Color;
 #[cfg(feature = "gui")]
 use sdl2::rect::Rect;
 #[cfg(feature = "gui")]
-use sdl2::render::Canvas;
+use sdl2::render::{Canvas, TextureCreator};
+#[cfg(feature = "gui")]
+use sdl2::surface::Surface;
 #[cfg(feature = "gui")]
 use sdl2::video::Window;
 
@@ -17,27 +19,31 @@ use crate::circles;
 
 use rand::Rng;
 
-const BIG_ASTEROID_INDEX: u8 = 1;
-const SMALL_ASTEROID_INDEX: u8 = 1;
+const SMALL_ASTEROID_INDEX: usize = 0;
+const BIG_ASTEROID_INDEX: usize = 1;
+
 
 /// contains a list of resources used for rendering. 
 pub struct ImageResources<'a> {
-    asteroids: [sdl2::surface::Surface<'a>; 2],
+    // one of these can likely be deleted.
+    // asteroids: [sdl2::surface::Surface<'a>; 2],
+
+    asteroids_texture: sdl2::render::Texture<'a>,
 }
 
 impl<'a> ImageResources<'a> {
     // loads up images from the resource directory.
-
-    pub fn from_dir(path: &Path) -> Self {
-
+    // these images can only be rendered to the canvas of the associated texture creator.
+    // kinda wonk imo.
+    pub fn from_dir<T>(path: &Path, texture_creator: &'a TextureCreator<T>) -> Self {
         let big_asteroid_p = path.join("images").join("asteroid_big.bmp");
-        let small_asteroid_p = path.join("images").join("asteroid_small.bmp");
 
-        let big_asteroid = sdl2::image::LoadSurface::from_file(big_asteroid_p).unwrap();
-        let small_asteroid = sdl2::image::LoadSurface::from_file(small_asteroid_p).unwrap();
+        let big_asteroid: Surface = sdl2::image::LoadSurface::from_file(big_asteroid_p).unwrap();
+
+        let asteroid_text = texture_creator.create_texture_from_surface(big_asteroid).unwrap();
 
         Self {
-            asteroids: [small_asteroid, big_asteroid]
+            asteroids_texture: asteroid_text,
         }
     }
 }
@@ -336,16 +342,16 @@ fn game_state_update(game_state: GameState, dt: f64, game_input: &GameInput) -> 
 }
 
 #[cfg(feature = "gui")]
-pub fn game_sdl2_render(game_state: &GameState, canvas: &mut Canvas<Window>) -> () {
+pub fn game_sdl2_render(game_state: &GameState, canvas: &mut Canvas<Window>,
+                        image_resources: &ImageResources) -> () {
     canvas.set_draw_color(Color::RGB(0, 255, 0));
     // put this into a asteroids specific draw function.
 
     let texture_creator = canvas.texture_creator();
+
+    
     
     for ast in game_state.asteroids.iter() {
-        // todo: load circles from bmp files instead. 
-        let asteroid_circle = circles::create_circle_texture(canvas, &texture_creator, ast.radius as i32).unwrap();
-        canvas.set_draw_color(Color::RGB(255, 0, 0));
         let dest_reg = Rect::new(
             ast.rust_sux.pos_x as i32,
             ast.rust_sux.pos_y as i32,
@@ -353,8 +359,8 @@ pub fn game_sdl2_render(game_state: &GameState, canvas: &mut Canvas<Window>) -> 
             ast.radius as u32,
         );
 
-        canvas.copy(&asteroid_circle, None, dest_reg).unwrap();
-        // let p = canvas.fill_rect();
+        canvas.copy(&image_resources.asteroids_texture[BIG_ASTEROID_INDEX],
+                    None, dest_reg).unwrap();
     }
 
     for bull in game_state.bullets.iter() {
@@ -372,7 +378,7 @@ pub fn game_sdl2_render(game_state: &GameState, canvas: &mut Canvas<Window>) -> 
     }
 
     canvas.set_draw_color(Color::RGB(0, 255, 0));
-    let p = canvas.fill_rect(Rect::new(
+    let _p = canvas.fill_rect(Rect::new(
         game_state.player.rust_sux.pos_x as i32,
         game_state.player.rust_sux.pos_y as i32,
         game_state.player.radius as u32,
