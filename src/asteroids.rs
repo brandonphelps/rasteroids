@@ -84,6 +84,7 @@ pub struct Player {
     pub rust_sux: MoveAblePos,
     radius: f64,
 }
+
 impl Player {
     pub fn bounding_box(&self) -> collision::Circle {
         return collision::Circle {
@@ -149,7 +150,7 @@ pub fn game_init() -> GameState {
                 velocity: 0.0,
                 direction: 0.0,
             },
-            radius: 5.0,
+            radius: 10.0,
         },
         bullets: vec![],
         world_width: 100.0,
@@ -233,7 +234,7 @@ fn game_state_update(game_state: GameState, dt: f64, game_input: &GameInput) -> 
     }
 
     // todo: add in wrap around for bullets and asteroids and player etc.
-    new_state.player.rust_sux.direction += game_input.rotation * dt;
+    new_state.player.rust_sux.direction += 0.5 * game_input.rotation * dt;
 
     if new_state.player.rust_sux.direction > 2.0 * std::f64::consts::PI {
         new_state.player.rust_sux.direction -= 2.0 * std::f64::consts::PI;
@@ -261,14 +262,14 @@ fn game_state_update(game_state: GameState, dt: f64, game_input: &GameInput) -> 
         );
     }
 
-    for bull in new_state.bullets.iter_mut() {
+    for bullet in new_state.bullets.iter_mut() {
         update_pos(
-            &mut bull.rust_sux,
+            &mut bullet.rust_sux,
             dt,
             game_state.world_width,
             game_state.world_height,
         );
-        bull.life_time -= 1.0 * dt;
+        bullet.life_time -= 1.0 * dt;
     }
 
     new_state.bullets.retain(|bull| bull.life_time > 0.0);
